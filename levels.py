@@ -12,10 +12,9 @@ PURPLE = (148,0,211);
 
 
 class level():
-	def __init__(self):
-		self.bots = [];
-		self.text = "";
-		self.outputs = []
+	def __init__(self,bots,text):
+		self.bots = bots
+		self.text = text
 	def set_text(self,text):
 		self.text = text;
 	def set_bots(self,bots):
@@ -40,8 +39,18 @@ class game_levels():
 				for i in range(n_robots):
 					sequences.append( list(map(int, text[2+i].split())) )
 				outputs = list(map(int,text[2+n_robots].split()))
-	def bots_creation(sequences,outputs):
-		
+
+				bots = bots_creation(n_robots,sequences,outputs);
+				fase = level(bots,missao);
+				self.stages.append(fase);
+
+def bots_creation(n_robots,sequences,outputs):
+	robots = [];
+	for i in range(n_robots):
+		rob = bot.robot(sequences[i],outputs[i]);
+		robots.append(rob)
+	print(robots)
+	return robots
 
 a = game_levels();
 a.get_levels()
