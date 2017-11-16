@@ -9,10 +9,9 @@
 # -------------------------------------------------------------
 
 import pygame
-import drawings
 import gridmap
 import bot
-import controls
+
 
 
 
@@ -28,6 +27,8 @@ MARGIN = 6;
 D = ARESTA+MARGIN;
 STOP_COUNTER = D/18;
 FRAME_RATE = 30
+START_X = 273;
+START_Y = 21;
 '''KEYS'''
 LEFT_KEY = pygame.K_LEFT
 RIGHT_KEY = pygame.K_RIGHT
@@ -52,19 +53,17 @@ BUILDER_CONTROLLER = [KEY1,KEY2,KEY3,KEY4]
 class Game():
     def __init__(self):
     	self.GRID_MAP = gridmap.grid_map(ARESTA,NSQUARES)
-    	self.CONTROL = controls.control_panel(X_CONTROL,Y_CONTROL,ARESTA_CONTROL);
     	self.robot_is_on = False;
     	self.builder = "arrow"
-    	self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector"}
-    	self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder()};
-    def start_robot(self,sequence):
-    	self.rob = bot.robot(273,21,sequence);
+    	self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector",KEY4:"writer"}
+    	self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder(),"writer":gridmap.writer_builder()};
+    def start_robot(self,sequence,output):
+    	self.rob = bot.robot(sequence,output);
     	self.robot_is_on = True;
     def loop(self, screen):
         clock = pygame.time.Clock()
-        last_clicked_grid = gridmap.grid_square(1);
-        last_clicked_grid_X = 900;
-        last_clicked_grid_Y = 900;
+        last_clicked_grid_X = 7;
+        last_clicked_grid_Y = 1;
         while True:
             delta_t = clock.tick( FRAME_RATE )
 
@@ -77,31 +76,26 @@ class Game():
                 	column = pos[1] // (ARESTA + MARGIN)
                 	row = pos[0] // (ARESTA + MARGIN)
                 	if( column < 15 and row < 15):
-                		last_clicked_grid.selected();
-                		last_clicked_grid = self.GRID_MAP.grid[row][column];
                 		last_clicked_grid_X = row;
                 		last_clicked_grid_Y = column;
-                		self.GRID_MAP.grid[row][column].selected();
+                		self.GRID_MAP.change_selection(column,row);
                 elif event.type == pygame.KEYDOWN:
                     if (event.key in DIRECTION_CONTROLLER):
                     	grid_maker = self.builderTable[self.builder];
                     	self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y] = grid_maker.makegrid(event.key)
                     elif event.key == Q_KEY:
                     	T = 0;
-                    	self.start_robot([0,1,1,0]);
+                    	self.start_robot([0,1,1,0],1);
                     elif (event.key in BUILDER_CONTROLLER):
                     	self.builder = self.builderSelector[event.key]
                     elif (event.key in MOVEMENT_CONTROLLER):
-                    	movement = MOVEMENT_CONTROLLER[event.key]
-                    	last_clicked_grid.selected();
+                    	movement = MOVEMENT_CONTROLLER[event.key];
                     	last_clicked_grid_X += movement[0];
                     	last_clicked_grid_Y += movement[1];
-                    	last_clicked_grid = self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y];
-                    	last_clicked_grid.selected();
+                    	self.GRID_MAP.change_selection(last_clicked_grid_Y,last_clicked_grid_X);
             # render game screen
             screen.fill( (255, 255, 255) ) # black background
             self.GRID_MAP.drawmap(screen);
-            self.CONTROL.draw(screen)
 
             if(self.robot_is_on):
             	self.rob.draw(screen)

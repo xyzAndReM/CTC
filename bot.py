@@ -1,24 +1,33 @@
 import pygame
-import drawings
+
 
 MARGIN = 6
 ARESTA = 30
+BLACK = (0,0,0);
+BLUE = (0,191,255);
+PINK = (255,105,180);
+RED = (204, 0, 0);
+PURPLE = (148,0,211);
+
+ELIXIR = pygame.image.load('images/elixir.png')
 
 class robot():
-	def __init__(self,x,y,sequence):
-		self.color = (0,191,255)
+	def __init__(self,sequence,output):
 		self.xspeed = 0
 		self.yspeed = 1
-		self.xcoord = x
-		self.ycoord = y
+		self.x = 273
+		self.y = 21
 		self.counter = 18;
 		self.sequence = sequence;
+		self.output = output;
 	def get_coords(self):
-		return (self.xcoord,self.ycoord)
+		return (self.x,self.y)
 	def move(self):
-		self.xcoord +=self.xspeed *2;
-		self.ycoord +=self.yspeed *2;
+		self.x +=self.xspeed *2;
+		self.y +=self.yspeed *2;
 		self.counter-=1;
+	def write(self,color):
+		self.sequence.append(color);
 	def change_speed(self,grid):
 		if(self.counter == 0):
 			self.counter = 18;
@@ -28,16 +37,17 @@ class robot():
 		return spd
 	def draw(self,screen):
 		spacing = 15;
-		pygame.draw.circle(screen, self.color, (self.xcoord,self.ycoord ), 10, 0)
+		x = self.x - 15;
+		y = self.y - 15;
+		w = 1
+		screen.blit(ELIXIR,(x,y))
 		for item in self.sequence:
 			spacing+=30;
 			if item == 0:
-				print("oi")
-				pygame.draw.circle(screen,(0,191,255),(spacing,570),12,0)
+				pygame.draw.circle(screen,BLUE,(spacing,570),12,0)
 			elif item == 1:
-				pygame.draw.circle(screen,(255,105,180),(spacing,570),12,0)
-def is_on_center(x,y):
-		if( ( (x - ARESTA/2 - MARGIN)%(ARESTA + 2*MARGIN) == 0) and ( (y - ARESTA/2 - MARGIN)%(ARESTA + 2*MARGIN) == 0) ):
-			return True
-		else:
-		 return False;
+				pygame.draw.circle(screen,PINK,(spacing,570),12,0)
+			elif item == 2:
+				pygame.draw.circle(screen,PURPLE,(spacing,570),12,0)
+			elif item == 3:
+				pygame.draw.circle(screen,RED,(spacing,570),12,0)

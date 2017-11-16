@@ -1,6 +1,5 @@
 import pygame
-import drawings
-import operator
+
 
 LEFT_KEY = pygame.K_LEFT
 RIGHT_KEY = pygame.K_RIGHT
@@ -12,6 +11,11 @@ MARGIN = 6;
 ARESTA = 30;
 blue = 0;
 pink = 1;
+
+BLUE_STAFF = pygame.image.load('images/bluestaff2.png')
+PINK_STAFF = pygame.image.load('images/pinkstaff2.png')
+PURPLE_STAFF = pygame.image.load('images/purplestaff2.png')
+RED_STAFF = pygame.image.load('images/redstaff2.png')
 
 
 class grid_square:
@@ -29,7 +33,6 @@ class grid_square:
 		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
 	def get_speed(self,dado):
 		return (self.xspeed,self.yspeed);
-
 
 class grid_arrow_right(grid_square):
 	def __init__(self, aresta):
@@ -166,6 +169,42 @@ class selector_left(grid_square):
 		coordinates = (  (15+x, 30+y), (7.5+x, 20+y), (22.5+x, 20+y))
 		pygame.draw.polygon(screen, (255,105,180), coordinates)
 
+class writer_blue(grid_square):
+	def get_speed(self,bot):
+		bot.write(0);
+		return bot.get_speed();
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(BLUE_STAFF,(x,y))
+class writer_pink(grid_square):
+	def get_speed(self,bot):
+		bot.write(1);
+		return bot.get_speed();
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(PINK_STAFF,(x,y))
+class writer_purple(grid_square):
+	def get_speed(self,bot):
+		bot.write(2);
+		return bot.get_speed();
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(PURPLE_STAFF,(x,y))
+class writer_red(grid_square):
+	def get_speed(self,bot):
+		bot.write(3);
+		return bot.get_speed();
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(RED_STAFF,(x,y))
+
+
+
+
 
 
 
@@ -173,17 +212,24 @@ class grid_map:
 	def __init__(self,aresta,n):
 		self.grid = []
 		self.n = n;
+		self.x = 1;
+		self.y = 7;
 		for row in range(n):
 			self.grid.append([])
 			for column in range(n):
 				x = grid_square(aresta)
 				self.grid[row].append(x)
+	def change_selection(self,x,y):
+		self.x = x;
+		self.y = y;
 	def drawmap(self,screen):
 		for row in range(self.n):
 			for column in range(self.n):
 				square = self.grid[row][column];
 				square.draw(screen,row,column);
-
+		column = self.y;
+		row = self.x;
+		pygame.draw.rect(screen, (100,32,200), ( (ARESTA+MARGIN) * column + MARGIN , (ARESTA+MARGIN) * row + MARGIN  , ARESTA, ARESTA),1)
 class simple_builder():
 	def __init__(self):
 		pass;
@@ -214,6 +260,16 @@ class selector_builder(simple_builder):
 			return selector_down(ARESTA);
 		else:
 			return grid_square(ARESTA);
+class writer_builder(simple_builder):
+	def makegrid(self,dir):
+		if   dir == RIGHT_KEY:
+			return writer_pink(ARESTA);
+		elif dir == LEFT_KEY:
+			return writer_blue(ARESTA);
+		elif dir == UP_KEY:
+			return writer_red(ARESTA);
+		elif dir == DOWN_KEY:
+			return writer_purple(ARESTA);
 
 
 
