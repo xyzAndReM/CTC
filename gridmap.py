@@ -127,13 +127,7 @@ class selector_down(grid_square):
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = (  (0+x, 15+y), (10+x, 7.5+y), (10+x, 22.5+y))
-		pygame.draw.polygon(screen, (255,105,180), coordinates)
-		coordinates = (  (30+x, 15+y), (20+x, 7.5+y), (20+x, 22.5+y))
-		pygame.draw.polygon(screen, (0,191,255), coordinates)
-		coordinates = (  (12.5+x, 15+y), (17.5+x, 15+y), (15+x, 0+y))
-		#pygame.draw.polygon(screen, (0,0,0), coordinates)
+		screen.blit(SELECTOR_DOWN,(x,y))
 class selector_right(grid_square):
 	def  get_speed(self,bot):
 		sequence = bot.sequence
