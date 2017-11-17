@@ -24,16 +24,21 @@ class grid_square:
 		self.xspeed = 0
 		self.yspeed = 0
 		self.aresta = aresta
-	def selected(self):
-		if(self.color == (220,220,220)):
-			self.color = (60,120,30);
-		elif(self.color == (60,120,30)):
-			self.color = (220,220,220);
+		self.output = 0;
 	def draw(self,screen,column,row):
 		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
 	def get_speed(self,dado):
 		return (self.xspeed,self.yspeed);
-
+class grid_success(grid_square):
+	def __init__(self, aresta):
+		self.color = (255,215,0)
+		self.xspeed = 0
+		self.yspeed = 0
+		self.aresta = aresta
+		self.output = 1;
+	def get_speed(self,bot):
+		bot.current_output = 1;
+		return (self.xspeed,self.yspeed);
 class grid_arrow_right(grid_square):
 	def __init__(self, aresta):
 		self.color = (220,220,220)
@@ -219,6 +224,7 @@ class grid_map:
 			for column in range(n):
 				x = grid_square(aresta)
 				self.grid[row].append(x)
+		self.grid[7][14] = grid_success(aresta)
 	def change_selection(self,x,y):
 		self.x = x;
 		self.y = y;

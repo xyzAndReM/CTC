@@ -12,20 +12,47 @@ PURPLE = (148,0,211);
 
 
 class level():
-	def __init__(self,bots,text):
-		self.bots = bots
+	def __init__(self,sequences,outputs,text,n_robots):
+		self.sequences = sequences
+		self.outputs = outputs
 		self.text = text
+		self.counter = 0;
+		self.rob = None;
+		self.n_robots = n_robots
 	def set_text(self,text):
 		self.text = text;
-	def set_bots(self,bots):
-		self.bots = bots;
+	def set_sequences(self,sequences):
+		self.sequences = sequences;
 	def set_outputs(self,outputs):
 		self.outputs = outputs;
+	def get_bot(self):
+		return self.rob;
+	def get_text(self):
+		return text;
+	def reset(self):
+		self.counter = 0;
+	def create_bot(self):
+		self.counter +=1;
+		if(self.counter < self.n_robots):
+			n = self.counter;
+			sequence = list(self.sequences[n])
+			output = self.outputs[n]
+			self.rob = bot.robot(sequence,output);
+			print(self.rob)
+			return self.rob
+		else:
+			return None;
+	def update_bot(self,grid,screen):
+		self.rob.draw(screen)
+		self.rob.move()
+		self.rob.change_speed(grid)
+
 class game_levels():
 	def __init__(self):
 		self.stages = [];
+		self.build_levels()
 	'''STAGE NUMBER 1:'''
-	def get_levels(self):
+	def build_levels(self):
 		files = os.listdir("stages/")
 		sequences = [];
 		print(files)
@@ -39,10 +66,10 @@ class game_levels():
 				for i in range(n_robots):
 					sequences.append( list(map(int, text[2+i].split())) )
 				outputs = list(map(int,text[2+n_robots].split()))
-
-				bots = bots_creation(n_robots,sequences,outputs);
-				fase = level(bots,missao);
+				fase = level(sequences,outputs,missao,n_robots);
 				self.stages.append(fase);
+	def get_levels(self):
+		return self.stages;
 
 def bots_creation(n_robots,sequences,outputs):
 	robots = [];

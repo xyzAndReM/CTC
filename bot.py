@@ -19,7 +19,9 @@ class robot():
 		self.y = 21
 		self.counter = 18;
 		self.sequence = sequence;
-		self.output = output;
+		self.target_output = output;
+		self.current_output = 0;
+		self.destroy = False;
 	def get_coords(self):
 		return (self.x,self.y)
 	def move(self):
@@ -35,6 +37,8 @@ class robot():
 	def get_speed(self):
 		spd = (self.xspeed,self.yspeed)
 		return spd
+	def validate(self):
+		return (self.target_output == self.current_output);
 	def draw(self,screen):
 		spacing = 15;
 		x = self.x - 15;

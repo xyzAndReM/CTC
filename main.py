@@ -11,6 +11,7 @@
 import pygame
 import gridmap
 import bot
+import levels
 
 
 
@@ -52,11 +53,13 @@ BUILDER_CONTROLLER = [KEY1,KEY2,KEY3,KEY4]
  
 class Game():
     def __init__(self):
-    	self.GRID_MAP = gridmap.grid_map(ARESTA,NSQUARES)
-    	self.robot_is_on = False;
-    	self.builder = "arrow"
-    	self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector",KEY4:"writer"}
-    	self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder(),"writer":gridmap.writer_builder()};
+        self.GRID_MAP = gridmap.grid_map(ARESTA,NSQUARES)
+        self.robot_is_on = False;
+        self.current_level = 0;
+        self.builder = "arrow"
+        self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector",KEY4:"writer"}
+        self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder(),"writer":gridmap.writer_builder()};
+        self.stages = levels.game_levels().get_levels()
     def start_robot(self,sequence,output):
     	self.rob = bot.robot(sequence,output);
     	self.robot_is_on = True;
@@ -64,6 +67,8 @@ class Game():
         clock = pygame.time.Clock()
         last_clicked_grid_X = 7;
         last_clicked_grid_Y = 1;
+        LEVEL = self.stages[0];
+        rob = None;
         while True:
             delta_t = clock.tick( FRAME_RATE )
 
@@ -85,7 +90,7 @@ class Game():
                     	self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y] = grid_maker.makegrid(event.key)
                     elif event.key == Q_KEY:
                     	T = 0;
-                    	self.start_robot([0,1,1,0],1);
+                    	rob = LEVEL.create_bot()
                     elif (event.key in BUILDER_CONTROLLER):
                     	self.builder = self.builderSelector[event.key]
                     elif (event.key in MOVEMENT_CONTROLLER):
@@ -97,15 +102,20 @@ class Game():
             screen.fill( (255, 255, 255) ) # black background
             self.GRID_MAP.drawmap(screen);
 
-            if(self.robot_is_on):
-            	self.rob.draw(screen)
-            	(X,Y) = self.rob.get_coords()
+            if(rob != None):
+            	rob.draw(screen)
+            	(X,Y) = rob.get_coords()
             	x = X// (ARESTA + MARGIN)
             	y = Y// (ARESTA + MARGIN)
             	actual_grid = self.GRID_MAP.grid[x][y];
-            	self.rob.move()
-            	self.rob.change_speed(actual_grid)
-          
+            	rob.move()
+            	rob.change_speed(actual_grid)
+            if(rob != None and rob.get_speed() == (0,0) ):
+                    if(rob.validate()):
+                        rob = LEVEL.create_bot()
+                    else:
+                        rob = None;
+                        LEVEL.reset();
             pygame.display.update()
             # or pygame.display.flip()
 
