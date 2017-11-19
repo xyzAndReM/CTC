@@ -32,13 +32,13 @@ class level():
 	def reset(self):
 		self.counter = 0;
 	def create_bot(self):
+		print('qpressed')
 		self.counter +=1;
 		if(self.counter < self.n_robots):
 			n = self.counter;
 			sequence = list(self.sequences[n])
 			output = self.outputs[n]
 			self.rob = bot.robot(sequence,output);
-			print(self.rob)
 			return self.rob
 		else:
 			return None;
@@ -54,9 +54,10 @@ class game_levels():
 	'''STAGE NUMBER 1:'''
 	def build_levels(self):
 		files = os.listdir("stages/")
-		sequences = [];
 		print(files)
 		for fle in files:
+			sequences = [];
+			outputs = [];
 			fle = "stages/"+fle;
 			with open(fle) as f:
 				text = f.readlines()
@@ -65,7 +66,8 @@ class game_levels():
 				n_robots = int(text[1])
 				for i in range(n_robots):
 					sequences.append( list(map(int, text[2+i].split())) )
-				outputs = list(map(int,text[2+n_robots].split()))
+					outputs.append(  list(map(int,text[2+i+n_robots].split())) )
+				print(outputs)
 				fase = level(sequences,outputs,missao,n_robots);
 				self.stages.append(fase);
 	def get_levels(self):
@@ -74,6 +76,7 @@ class game_levels():
 def bots_creation(n_robots,sequences,outputs):
 	robots = [];
 	for i in range(n_robots):
+		print(outputs[i])
 		rob = bot.robot(sequences[i],outputs[i]);
 		robots.append(rob)
 	print(robots)

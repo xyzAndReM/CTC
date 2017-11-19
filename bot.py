@@ -11,6 +11,12 @@ PURPLE = (148,0,211);
 
 ELIXIR = pygame.image.load('images/elixir.png')
 
+def manipulate_target_sequence(output):
+		if(output == [2]):
+			return [];
+		else:
+			return output;
+
 class robot():
 	def __init__(self,sequence,output):
 		self.xspeed = 0
@@ -19,8 +25,7 @@ class robot():
 		self.y = 21
 		self.counter = 18;
 		self.sequence = sequence;
-		self.target_output = output;
-		self.current_output = 0;
+		self.target_sequence = manipulate_target_sequence(output);
 		self.destroy = False;
 	def get_coords(self):
 		return (self.x,self.y)
@@ -38,7 +43,9 @@ class robot():
 		spd = (self.xspeed,self.yspeed)
 		return spd
 	def validate(self):
-		return (self.target_output == self.current_output);
+		print(self.target_sequence)
+		print(self.sequence)
+		return (self.target_sequence == self.sequence);
 	def draw(self,screen):
 		spacing = 15;
 		x = self.x - 15;
@@ -55,3 +62,4 @@ class robot():
 				pygame.draw.circle(screen,PURPLE,(spacing,570),12,0)
 			elif item == 3:
 				pygame.draw.circle(screen,RED,(spacing,570),12,0)
+

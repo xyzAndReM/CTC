@@ -57,8 +57,6 @@ myfont = pygame.font.SysFont('Comic Sans MS', 18)
  
 class Game():
     def __init__(self):
-        self.GRID_MAP = gridmap.grid_map(ARESTA,NSQUARES)
-        self.robot_is_on = False;
         self.current_level = 0;
         self.builder = "arrow"
         self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector",KEY4:"writer",KEY6:'special'}
@@ -68,61 +66,69 @@ class Game():
     	self.rob = bot.robot(sequence,output);
     	self.robot_is_on = True;
     def loop(self, screen):
-        clock = pygame.time.Clock()
-        last_clicked_grid_X = 7;
-        last_clicked_grid_Y = 1;
-        LEVEL = self.stages[0];
-        missao = pygame.image.load(LEVEL.text);
-        rob = None;
-        while True:
-            delta_t = clock.tick( FRAME_RATE )
+        for i in range(len(self.stages)):
+            print('lvlstart')
+            self.GRID_MAP = gridmap.grid_map(ARESTA,NSQUARES)
+            clock = pygame.time.Clock()
+            last_clicked_grid_X = 7;
+            last_clicked_grid_Y = 1;
+            LEVEL = self.stages[i];
+            missao = pygame.image.load(LEVEL.text);
+            rob = None;
+            while True:
+                delta_t = clock.tick( FRAME_RATE )
 
-            # handle input events
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return # closing the window, end of the game loop
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                	pos = pygame.mouse.get_pos()
-                	column = pos[1] // (ARESTA + MARGIN)
-                	row = pos[0] // (ARESTA + MARGIN)
-                	if( column < 15 and row < 15):
-                		last_clicked_grid_X = row;
-                		last_clicked_grid_Y = column;
-                		self.GRID_MAP.change_selection(column,row);
-                elif event.type == pygame.KEYDOWN:
-                    if (event.key in DIRECTION_CONTROLLER):
-                    	grid_maker = self.builderTable[self.builder];
-                    	self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y] = grid_maker.makegrid(event.key)
-                    elif event.key == Q_KEY:
-                    	T = 0;
-                    	rob = LEVEL.create_bot()
-                    elif (event.key in BUILDER_CONTROLLER):
-                    	self.builder = self.builderSelector[event.key]
-                    elif (event.key in MOVEMENT_CONTROLLER):
-                    	movement = MOVEMENT_CONTROLLER[event.key];
-                    	last_clicked_grid_X += movement[0];
-                    	last_clicked_grid_Y += movement[1];
-                    	self.GRID_MAP.change_selection(last_clicked_grid_Y,last_clicked_grid_X);
-            # render game screen
-            screen.fill( (255, 255, 255) ) # black background
-            self.GRID_MAP.drawmap(screen);
+                # handle input events
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return # closing the window, end of the game loop
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                    	pos = pygame.mouse.get_pos()
+                    	column = pos[1] // (ARESTA + MARGIN)
+                    	row = pos[0] // (ARESTA + MARGIN)
+                    	if( column < 15 and row < 15):
+                    		last_clicked_grid_X = row;
+                    		last_clicked_grid_Y = column;
+                    		self.GRID_MAP.change_selection(column,row);
+                    elif event.type == pygame.KEYDOWN:
+                        if (event.key in DIRECTION_CONTROLLER):
+                        	grid_maker = self.builderTable[self.builder];
+                        	self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y] = grid_maker.makegrid(event.key)
+                        elif event.key == Q_KEY:
+                        	T = 0;
+                        	rob = LEVEL.create_bot()
+                        elif (event.key in BUILDER_CONTROLLER):
+                        	self.builder = self.builderSelector[event.key]
+                        elif (event.key in MOVEMENT_CONTROLLER):
+                        	movement = MOVEMENT_CONTROLLER[event.key];
+                        	last_clicked_grid_X += movement[0];
+                        	last_clicked_grid_Y += movement[1];
+                        	self.GRID_MAP.change_selection(last_clicked_grid_Y,last_clicked_grid_X);
+                # render game screen
+                screen.fill( (255, 255, 255) ) # black background
+                self.GRID_MAP.drawmap(screen);
 
-            if(rob != None):
-            	rob.draw(screen)
-            	(X,Y) = rob.get_coords()
-            	x = X// (ARESTA + MARGIN)
-            	y = Y// (ARESTA + MARGIN)
-            	actual_grid = self.GRID_MAP.grid[x][y];
-            	rob.move()
-            	rob.change_speed(actual_grid)
-            if(rob != None and rob.get_speed() == (0,0) ):
-                    if(rob.validate()):
-                        rob = LEVEL.create_bot()
-                    else:
-                        rob = None;
-                        LEVEL.reset();
-            screen.blit(missao,(600,0))
-            pygame.display.update()
+                if(rob != None):
+                	rob.draw(screen)
+                	(X,Y) = rob.get_coords()
+                	x = X// (ARESTA + MARGIN)
+                	y = Y// (ARESTA + MARGIN)
+                	actual_grid = self.GRID_MAP.grid[x][y];
+                	rob.move()
+                	rob.change_speed(actual_grid)
+                if(rob != None and rob.get_speed() == (0,0) ):
+                        if(rob.validate()):
+                            print('SUCCESS')
+                            rob = LEVEL.create_bot()
+                            if(rob == None):
+                                break
+                        else:
+                            print('FAILURE')
+                            rob = None;
+                            LEVEL.reset();
+
+                screen.blit(missao,(600,0))
+                pygame.display.update()
             # or pygame.display.flip()
 
     def quit(self):

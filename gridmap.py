@@ -38,12 +38,16 @@ class grid_square:
 		self.xspeed = 0
 		self.yspeed = 0
 		self.aresta = aresta
-		self.output = 0;
+		self.output = -1;
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(self.image,(x,y))
-	def get_speed(self,dado):
+	def get_speed(self,bot):
+		return (self.xspeed,self.yspeed);
+class grid_fail(grid_square):
+	def get_speed(self,bot):
+		bot.sequence = [-1];
 		return (self.xspeed,self.yspeed);
 class grid_success(grid_square):
 	def __init__(self, aresta):
@@ -208,7 +212,7 @@ class grid_map:
 		for row in range(n):
 			self.grid.append([])
 			for column in range(n):
-				x = grid_square(aresta)
+				x = grid_fail(aresta)
 				self.grid[row].append(x)
 		self.grid[7][14] = grid_success(aresta)
 	def change_selection(self,x,y):
