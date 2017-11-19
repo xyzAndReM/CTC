@@ -12,6 +12,15 @@ ARESTA = 30;
 blue = 0;
 pink = 1;
 
+GRID = pygame.image.load('images/grid.png')
+SUCCESS = pygame.image.load('images/success.png');
+TELEPORTER = pygame.image.load('images/teleporter.png');
+
+ARROW_RIGHT =  pygame.image.load('images/arrow_right.png');
+ARROW_LEFT  =  pygame.image.load('images/arrow_left.png');
+ARROW_UP    =  pygame.image.load('images/arrow_up.png');
+ARROW_DOWN  =  pygame.image.load('images/arrow_down.png');
+
 BLUE_STAFF = pygame.image.load('images/bluestaff2.png')
 PINK_STAFF = pygame.image.load('images/pinkstaff2.png')
 PURPLE_STAFF = pygame.image.load('images/purplestaff2.png')
@@ -25,18 +34,20 @@ SELECTOR_RIGHT = pygame.image.load('images/selector_right.png');
 
 class grid_square:
 	def __init__(self, aresta):
-		self.color = (220,220,220)
+		self.image = GRID;
 		self.xspeed = 0
 		self.yspeed = 0
 		self.aresta = aresta
 		self.output = 0;
 	def draw(self,screen,column,row):
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(self.image,(x,y))
 	def get_speed(self,dado):
 		return (self.xspeed,self.yspeed);
 class grid_success(grid_square):
 	def __init__(self, aresta):
-		self.color = (255,215,0)
+		self.image = SUCCESS
 		self.xspeed = 0
 		self.yspeed = 0
 		self.aresta = aresta
@@ -44,57 +55,41 @@ class grid_success(grid_square):
 	def get_speed(self,bot):
 		bot.current_output = 1;
 		return (self.xspeed,self.yspeed);
+class teleporter(grid_square):
+	def __init__(self,aresta):
+		self.image = TELEPORTER
+		self.xspeed = 0
+		self.yspeed = 0
+		self.aresta = aresta
+		self.output = 0;
+	def get_speed(self,bot):
+		bot.x +=bot.xspeed*72;
+		bot.y +=bot.yspeed*72;
+		return (bot.xspeed,bot.yspeed);
 class grid_arrow_right(grid_square):
 	def __init__(self, aresta):
-		self.color = (220,220,220)
+		self.image = ARROW_RIGHT
 		self.xspeed = 1
 		self.yspeed = 0
 		self.aresta = aresta
-	def draw(self,screen,column,row):
-		x = column*(MARGIN+self.aresta) + MARGIN;
-		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = ( (0+x, 7+y), (0+x, 23+y), (15+x, 23+y), (15+x, 30+y), (30+x, 15+y), (15+x, 0+y), (15+x,7+y))
-		pygame.draw.polygon(screen, (0, 0, 0), coordinates)
-
 class grid_arrow_left(grid_square):
 	def __init__(self, aresta):
-		self.color = (220,220,220)
+		self.image = ARROW_LEFT
 		self.xspeed = -1
 		self.yspeed = 0
 		self.aresta = aresta
-	def draw(self,screen,column,row):
-		x = column*(MARGIN+self.aresta) + MARGIN;
-		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = ( (0+x, 15+y), (15+x, 30+y), (15+x, 23+y), (30+x, 23+y), (30+x, 7+y), (15+x, 7+y), (15+x,0+y))
-		pygame.draw.polygon(screen, (0, 0, 0), coordinates)
-
 class grid_arrow_up(grid_square):
 	def __init__(self, aresta):
-		self.color = (220,220,220)
+		self.image = ARROW_UP
 		self.xspeed = 0
 		self.yspeed = -1
 		self.aresta = aresta
-	def draw(self,screen,column,row):
-		x = column*(MARGIN+self.aresta) + MARGIN;
-		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = ( (15+x, 0+y), (30+x, 15+y), (23+x, 15+y), (23+x, 30+y), (7+x, 30+y), (7+x, 15+y), (0+x,15+y))
-		pygame.draw.polygon(screen, (0, 0, 0), coordinates)
-
 class grid_arrow_down(grid_square):
 	def __init__(self, aresta):
-		self.color = (220,220,220)
+		self.image = ARROW_DOWN;
 		self.xspeed = 0
 		self.yspeed = 1
 		self.aresta = aresta
-	def draw(self,screen,column,row):
-		x = column*(MARGIN+self.aresta) + MARGIN;
-		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = ( (15+x, 30+y), (30+x, 15+y), (23+x, 15+y), (23+x, 0+y), (7+x, 0+y), (7+x,15+y), (0+x,15+y))
-		pygame.draw.polygon(screen, (0, 0, 0), coordinates)
 #-----------------------------------------------------------------
 class selector_up(grid_square):
 	def  get_speed(self,bot):
@@ -102,9 +97,9 @@ class selector_up(grid_square):
 		if(sequence):
 			dado = sequence.pop(0)
 			if(dado == blue):
-				return (-1,0);
+				return (+1,0);
 			elif(dado == pink):
-				return (1,0)
+				return (-1,0)
 			else:
 				return(0,-1);
 		else:
@@ -119,11 +114,13 @@ class selector_down(grid_square):
 		if(sequence):
 			dado = sequence.pop(0)
 			if(dado == blue):
-				return (+1,0);
+				return (-1,0);
 			elif(dado == pink):
-				return (-1,0)
+				return (+1,0)
+			else:
+				return (0,1)
 		else:
-			return bot.get_speed();
+			return (0,1);
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
@@ -137,17 +134,14 @@ class selector_right(grid_square):
 				return (0,+1);
 			elif(dado == pink):
 				return (0,-1)
+			else:
+				return (1,0)
 		else:
-			return bot.get_speed();
+			return (1,0);
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = (  (15+x, 0+y), (7.5+x, 10+y), (22.5+x, 10+y))
-		pygame.draw.polygon(screen, (255,105,180), coordinates)
-		coordinates = (  (15+x, 30+y), (7.5+x, 20+y), (22.5+x, 20+y))
-		pygame.draw.polygon(screen, (0,191,255), coordinates)
-		#coordinates = (  (12.5+x, 15+y), (17.5+x, 15+y), (15+x, 0+y))
+		screen.blit(SELECTOR_RIGHT,(x,y))
 class selector_left(grid_square):
 	def  get_speed(self,bot):
 		sequence = bot.sequence
@@ -157,16 +151,14 @@ class selector_left(grid_square):
 				return (0,-1);
 			elif(dado == pink):
 				return (0,+1)
+			else:
+				return (-1,0)
 		else:
-			return bot.get_speed();
+			return (-1,0);
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
-		pygame.draw.rect(screen, self.color, ( (MARGIN + self.aresta) * column + MARGIN, (MARGIN +  self.aresta) * row + MARGIN, self.aresta, self.aresta))
-		coordinates = (  (15+x, 0+y), (7.5+x, 10+y), (22.5+x, 10+y))
-		pygame.draw.polygon(screen, (0,191,255), coordinates)
-		coordinates = (  (15+x, 30+y), (7.5+x, 20+y), (22.5+x, 20+y))
-		pygame.draw.polygon(screen, (255,105,180), coordinates)
+		screen.blit(SELECTOR_LEFT,(x,y))
 
 class writer_blue(grid_square):
 	def get_speed(self,bot):
@@ -270,6 +262,14 @@ class writer_builder(simple_builder):
 			return writer_red(ARESTA);
 		elif dir == DOWN_KEY:
 			return writer_purple(ARESTA);
+class special_builder(simple_builder):
+	def makegrid(self,dir):
+		if dir == UP_KEY:
+			return teleporter(ARESTA);
+		elif dir == DOWN_KEY:
+			return grid_success(ARESTA);
+		else:
+			return grid_square(ARESTA);
 
 
 
