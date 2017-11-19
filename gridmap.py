@@ -11,6 +11,8 @@ MARGIN = 6;
 ARESTA = 30;
 blue = 0;
 pink = 1;
+purple = 2;
+red = 3;
 
 GRID = pygame.image.load('images/grid.png')
 SUCCESS = pygame.image.load('images/success.png');
@@ -30,6 +32,11 @@ SELECTOR_UP = pygame.image.load('images/selector.png');
 SELECTOR_DOWN = pygame.image.load('images/selector_down.png');
 SELECTOR_LEFT = pygame.image.load('images/selector_left.png');
 SELECTOR_RIGHT = pygame.image.load('images/selector_right.png');
+
+SELECTOR2_UP = pygame.image.load('images/selector2_up.png');
+SELECTOR2_DOWN = pygame.image.load('images/selector2_down.png');
+SELECTOR2_LEFT = pygame.image.load('images/selector2_left.png');
+SELECTOR2_RIGHT = pygame.image.load('images/selector2_right.png');
 
 
 class grid_square:
@@ -95,14 +102,18 @@ class grid_arrow_down(grid_square):
 		self.yspeed = 1
 		self.aresta = aresta
 #-----------------------------------------------------------------
+
+
 class selector_up(grid_square):
 	def  get_speed(self,bot):
 		sequence = bot.sequence
 		if(sequence):
-			dado = sequence.pop(0)
+			dado = sequence[0]
 			if(dado == blue):
+				sequence.pop(0)
 				return (+1,0);
 			elif(dado == pink):
+				sequence.pop(0)
 				return (-1,0)
 			else:
 				return(0,-1);
@@ -116,10 +127,12 @@ class selector_down(grid_square):
 	def  get_speed(self,bot):
 		sequence = bot.sequence
 		if(sequence):
-			dado = sequence.pop(0)
+			dado = sequence[0]
 			if(dado == blue):
+				sequence.pop(0)
 				return (-1,0);
 			elif(dado == pink):
+				sequence.pop(0)
 				return (+1,0)
 			else:
 				return (0,1)
@@ -133,10 +146,12 @@ class selector_right(grid_square):
 	def  get_speed(self,bot):
 		sequence = bot.sequence
 		if(sequence):
-			dado = sequence.pop(0)
+			dado = sequence[0]
 			if(dado == blue):
+				sequence.pop(0)
 				return (0,+1);
 			elif(dado == pink):
+				sequence.pop(0)
 				return (0,-1)
 			else:
 				return (1,0)
@@ -150,10 +165,12 @@ class selector_left(grid_square):
 	def  get_speed(self,bot):
 		sequence = bot.sequence
 		if(sequence):
-			dado = sequence.pop(0)
+			dado = sequence[0]
 			if(dado == blue):
+				sequence.pop(0)
 				return (0,-1);
 			elif(dado == pink):
+				sequence.pop(0)
 				return (0,+1)
 			else:
 				return (-1,0)
@@ -163,6 +180,85 @@ class selector_left(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR_LEFT,(x,y))
+#----------------------------------------------
+class selector2_up(grid_square):
+	def  get_speed(self,bot):
+		sequence = bot.sequence
+		if(sequence):
+			dado = sequence[0]
+			if(dado == purple):
+				sequence.pop(0)
+				return (+1,0);
+			elif(dado == red):
+				sequence.pop(0)
+				return (-1,0)
+			else:
+				return(0,-1);
+		else:
+			return (0,-1);
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(SELECTOR2_UP,(x,y))
+class selector2_down(grid_square):
+	def  get_speed(self,bot):
+		sequence = bot.sequence
+		if(sequence):
+			dado = sequence[0]
+			if(dado == purple):
+				sequence.pop(0)
+				return (-1,0);
+			elif(dado == red):
+				sequence.pop(0)
+				return (+1,0)
+			else:
+				return (0,1)
+		else:
+			return (0,1);
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(SELECTOR2_DOWN,(x,y))
+class selector2_right(grid_square):
+	def  get_speed(self,bot):
+		sequence = bot.sequence
+		if(sequence):
+			dado = sequence[0]
+			if(dado == purple):
+				sequence.pop(0)
+				return (0,+1);
+			elif(dado == red):
+				sequence.pop(0)
+				return (0,-1)
+			else:
+				return (1,0)
+		else:
+			return (1,0);
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(SELECTOR2_RIGHT,(x,y))
+class selector2_left(grid_square):
+	def  get_speed(self,bot):
+		sequence = bot.sequence
+		if(sequence):
+			dado = sequence[0]
+			if(dado == purple):
+				sequence.pop(0)
+				return (0,-1);
+			elif(dado == red):
+				sequence.pop(0)
+				return (0,+1)
+			else:
+				return (-1,0)
+		else:
+			return (-1,0);
+	def draw(self,screen,column,row):
+		x = column*(MARGIN+self.aresta) + MARGIN;
+		y = row*(MARGIN+self.aresta) + MARGIN;
+		screen.blit(SELECTOR2_LEFT,(x,y))
+
+
 
 class writer_blue(grid_square):
 	def get_speed(self,bot):
@@ -254,6 +350,18 @@ class selector_builder(simple_builder):
 			return selector_up(ARESTA);
 		elif dir == DOWN_KEY:
 			return selector_down(ARESTA);
+		else:
+			return grid_square(ARESTA);
+class selector2_builder(simple_builder):
+	def makegrid(self,dir):
+		if   dir == RIGHT_KEY:
+			return selector2_right(ARESTA);
+		elif dir == LEFT_KEY:
+			return selector2_left(ARESTA);
+		elif dir == UP_KEY:
+			return selector2_up(ARESTA);
+		elif dir == DOWN_KEY:
+			return selector2_down(ARESTA);
 		else:
 			return grid_square(ARESTA);
 class writer_builder(simple_builder):

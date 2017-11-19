@@ -40,6 +40,7 @@ KEY1 = pygame.K_1
 KEY2 = pygame.K_2
 KEY3 = pygame.K_3
 KEY4 = pygame.K_4
+KEY5 = pygame.K_5
 KEY6 = pygame.K_6
 A_KEY = pygame.K_a
 S_KEY = pygame.K_s
@@ -48,7 +49,7 @@ D_KEY = pygame.K_d
 
 DIRECTION_CONTROLLER = [LEFT_KEY,RIGHT_KEY,UP_KEY,DOWN_KEY]
 MOVEMENT_CONTROLLER = {A_KEY:(-1,0),W_KEY:(0,-1),S_KEY:(0,1),D_KEY:(1,0)}
-BUILDER_CONTROLLER = [KEY1,KEY2,KEY3,KEY4,KEY6]
+BUILDER_CONTROLLER = [KEY1,KEY2,KEY3,KEY4,KEY5,KEY6]
 
 pygame.font.init() # you have to call this at the start, 
                    # if you want to use this module.
@@ -59,8 +60,8 @@ class Game():
     def __init__(self):
         self.current_level = 0;
         self.builder = "arrow"
-        self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector",KEY4:"writer",KEY6:'special'}
-        self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder(),"writer":gridmap.writer_builder(),"special":gridmap.special_builder()};
+        self.builderSelector = {KEY1:"simple",KEY2:"arrow",KEY3:"selector",KEY4:"writer",KEY5:'selector2',KEY6:'special'}
+        self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder(),"selector2":gridmap.selector2_builder(),"writer":gridmap.writer_builder(),"special":gridmap.special_builder()};
         self.stages = levels.game_levels().get_levels()
     def start_robot(self,sequence,output):
     	self.rob = bot.robot(sequence,output);
