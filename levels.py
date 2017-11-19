@@ -16,7 +16,7 @@ class level():
 		self.sequences = sequences
 		self.outputs = outputs
 		self.text = text
-		self.counter = 0;
+		self.counter = -1;
 		self.rob = None;
 		self.n_robots = n_robots
 	def set_text(self,text):
@@ -30,7 +30,7 @@ class level():
 	def get_text(self):
 		return text;
 	def reset(self):
-		self.counter = 0;
+		self.counter = -1;
 	def create_bot(self):
 		print('qpressed')
 		self.counter +=1;

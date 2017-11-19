@@ -1,5 +1,5 @@
 import pygame
-
+import os
 
 LEFT_KEY = pygame.K_LEFT
 RIGHT_KEY = pygame.K_RIGHT
@@ -13,6 +13,8 @@ blue = 0;
 pink = 1;
 purple = 2;
 red = 3;
+pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
+pygame.init()
 
 GRID = pygame.image.load('images/grid.png')
 SUCCESS = pygame.image.load('images/success.png');
@@ -38,6 +40,22 @@ SELECTOR2_DOWN = pygame.image.load('images/selector2_down.png');
 SELECTOR2_LEFT = pygame.image.load('images/selector2_left.png');
 SELECTOR2_RIGHT = pygame.image.load('images/selector2_right.png');
 
+MAGIC = 'sound/magic.wav'
+SELECT = 'sound/select.wav'
+SWIPE = 'sound/swipe.wav'
+
+_sound_library = {}
+def play_sound(path):	
+  global _sound_library
+  if(path != None):
+	  sound = _sound_library.get(path)
+	  if sound == None:
+	    canonicalized_path = path.replace('/', os.sep).replace('\\', os.sep)
+	    sound = pygame.mixer.Sound(path)
+	    _sound_library[path] = sound
+	  sound.play()
+
+
 
 class grid_square:
 	def __init__(self, aresta):
@@ -46,6 +64,7 @@ class grid_square:
 		self.yspeed = 0
 		self.aresta = aresta
 		self.output = -1;
+		self.sound = None;
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
@@ -103,9 +122,13 @@ class grid_arrow_down(grid_square):
 		self.aresta = aresta
 #-----------------------------------------------------------------
 
-
-class selector_up(grid_square):
+class selector_int(grid_square):
+	def __init__(self,aresta):
+		self.aresta = aresta
+		self.sound = SELECT;
+class selector_up(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -123,8 +146,9 @@ class selector_up(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR_UP,(x,y))
-class selector_down(grid_square):
+class selector_down(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -142,8 +166,9 @@ class selector_down(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR_DOWN,(x,y))
-class selector_right(grid_square):
+class selector_right(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -161,8 +186,9 @@ class selector_right(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR_RIGHT,(x,y))
-class selector_left(grid_square):
+class selector_left(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -181,8 +207,9 @@ class selector_left(grid_square):
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR_LEFT,(x,y))
 #----------------------------------------------
-class selector2_up(grid_square):
+class selector2_up(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -200,8 +227,9 @@ class selector2_up(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR2_UP,(x,y))
-class selector2_down(grid_square):
+class selector2_down(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -219,8 +247,9 @@ class selector2_down(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR2_DOWN,(x,y))
-class selector2_right(grid_square):
+class selector2_right(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -238,8 +267,9 @@ class selector2_right(grid_square):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(SELECTOR2_RIGHT,(x,y))
-class selector2_left(grid_square):
+class selector2_left(selector_int):
 	def  get_speed(self,bot):
+		play_sound(self.sound)
 		sequence = bot.sequence
 		if(sequence):
 			dado = sequence[0]
@@ -259,34 +289,41 @@ class selector2_left(grid_square):
 		screen.blit(SELECTOR2_LEFT,(x,y))
 
 
-
-class writer_blue(grid_square):
+class writer_int(grid_square):
+	def __init__(self, aresta):
+		self.aresta = aresta
+		self.sound = MAGIC;
+class writer_blue(writer_int):
 	def get_speed(self,bot):
 		bot.write(0);
+		play_sound(self.sound)
 		return bot.get_speed();
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(BLUE_STAFF,(x,y))
-class writer_pink(grid_square):
+class writer_pink(writer_int):
 	def get_speed(self,bot):
 		bot.write(1);
+		play_sound(self.sound)
 		return bot.get_speed();
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(PINK_STAFF,(x,y))
-class writer_purple(grid_square):
+class writer_purple(writer_int):
 	def get_speed(self,bot):
 		bot.write(2);
+		play_sound(self.sound)
 		return bot.get_speed();
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
 		y = row*(MARGIN+self.aresta) + MARGIN;
 		screen.blit(PURPLE_STAFF,(x,y))
-class writer_red(grid_square):
+class writer_red(writer_int):
 	def get_speed(self,bot):
 		bot.write(3);
+		play_sound(self.sound)
 		return bot.get_speed();
 	def draw(self,screen,column,row):
 		x = column*(MARGIN+self.aresta) + MARGIN;
@@ -312,6 +349,7 @@ class grid_map:
 				self.grid[row].append(x)
 		self.grid[7][14] = grid_success(aresta)
 	def change_selection(self,x,y):
+		play_sound(SWIPE)
 		self.x = x;
 		self.y = y;
 	def drawmap(self,screen):

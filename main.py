@@ -12,6 +12,7 @@ import pygame
 import gridmap
 import bot
 import levels
+import os
 
 
 
@@ -50,10 +51,23 @@ D_KEY = pygame.K_d
 DIRECTION_CONTROLLER = [LEFT_KEY,RIGHT_KEY,UP_KEY,DOWN_KEY]
 MOVEMENT_CONTROLLER = {A_KEY:(-1,0),W_KEY:(0,-1),S_KEY:(0,1),D_KEY:(1,0)}
 BUILDER_CONTROLLER = [KEY1,KEY2,KEY3,KEY4,KEY5,KEY6]
+pygame.mixer.pre_init(44100, -16, 2, 512)
+pygame.init()
+pygame.mixer.music.load('sound/main1.ogg')
 
-pygame.font.init() # you have to call this at the start, 
-                   # if you want to use this module.
-myfont = pygame.font.SysFont('Comic Sans MS', 18)
+CHANGE = 'sound/change.wav'
+
+_sound_library = {}
+def play_sound(path):   
+  global _sound_library
+  if(path != None):
+      sound = _sound_library.get(path)
+      if sound == None:
+        canonicalized_path = path.replace('/', os.sep).replace('\\', os.sep)
+        sound = pygame.mixer.Sound(path)
+        _sound_library[path] = sound
+      sound.play()
+
 
  
 class Game():
@@ -76,6 +90,7 @@ class Game():
             LEVEL = self.stages[i];
             missao = pygame.image.load(LEVEL.text);
             rob = None;
+            pygame.mixer.music.play(-1,0.0)
             while True:
                 delta_t = clock.tick( FRAME_RATE )
 
@@ -99,12 +114,15 @@ class Game():
                         	T = 0;
                         	rob = LEVEL.create_bot()
                         elif (event.key in BUILDER_CONTROLLER):
-                        	self.builder = self.builderSelector[event.key]
+                            play_sound(CHANGE);
+                            self.builder = self.builderSelector[event.key]
                         elif (event.key in MOVEMENT_CONTROLLER):
                         	movement = MOVEMENT_CONTROLLER[event.key];
                         	last_clicked_grid_X += movement[0];
                         	last_clicked_grid_Y += movement[1];
                         	self.GRID_MAP.change_selection(last_clicked_grid_Y,last_clicked_grid_X);
+
+
                 # render game screen
                 screen.fill( (255, 255, 255) ) # black background
                 self.GRID_MAP.drawmap(screen);
@@ -139,7 +157,7 @@ class Game():
 def main():
     pygame.init()
     screen = pygame.display.set_mode( (SCREEN_WIDTH, SCREEN_HEIGHT) )
-    pygame.display.set_caption( 'Example' )
+    pygame.display.set_caption( 'CTC projetinho' )
     #pygame.mouse.set_visible( False )
     game = Game()
     game.loop( screen )
