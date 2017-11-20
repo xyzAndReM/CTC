@@ -56,7 +56,11 @@ pygame.init()
 pygame.mixer.music.load('sound/main1.ogg')
 
 CHANGE = 'sound/change.wav'
-
+EQUIP = 'sound/equip.wav'
+SUCCESS = 'sound/success.wav'
+START = 'sound/start.wav'
+END = 'sound/end.wav'
+ERROR = 'sound/error.wav'
 _sound_library = {}
 def play_sound(path):   
   global _sound_library
@@ -68,6 +72,13 @@ def play_sound(path):
         _sound_library[path] = sound
       sound.play()
 
+def delay(delta,t):
+    k = 0
+    print(delta)
+    while k< t:
+        k += delta;
+
+
 
  
 class Game():
@@ -78,8 +89,8 @@ class Game():
         self.builderTable = {"simple":gridmap.simple_builder(), "arrow":gridmap.arrow_builder(),"selector":gridmap.selector_builder(),"selector2":gridmap.selector2_builder(),"writer":gridmap.writer_builder(),"special":gridmap.special_builder()};
         self.stages = levels.game_levels().get_levels()
     def start_robot(self,sequence,output):
-    	self.rob = bot.robot(sequence,output);
-    	self.robot_is_on = True;
+        self.rob = bot.robot(sequence,output);
+        self.robot_is_on = True;
     def loop(self, screen):
         for i in range(len(self.stages)):
             print('lvlstart')
@@ -99,28 +110,31 @@ class Game():
                     if event.type == pygame.QUIT:
                         return # closing the window, end of the game loop
                     elif event.type == pygame.MOUSEBUTTONDOWN:
-                    	pos = pygame.mouse.get_pos()
-                    	column = pos[1] // (ARESTA + MARGIN)
-                    	row = pos[0] // (ARESTA + MARGIN)
-                    	if( column < 15 and row < 15):
-                    		last_clicked_grid_X = row;
-                    		last_clicked_grid_Y = column;
-                    		self.GRID_MAP.change_selection(column,row);
+                        pos = pygame.mouse.get_pos()
+                        column = pos[1] // (ARESTA + MARGIN)
+                        row = pos[0] // (ARESTA + MARGIN)
+                        if( column < 15 and row < 15):
+                            last_clicked_grid_X = row;
+                            last_clicked_grid_Y = column;
+                            self.GRID_MAP.change_selection(column,row);
                     elif event.type == pygame.KEYDOWN:
                         if (event.key in DIRECTION_CONTROLLER):
-                        	grid_maker = self.builderTable[self.builder];
-                        	self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y] = grid_maker.makegrid(event.key)
+                            play_sound(EQUIP)
+                            grid_maker = self.builderTable[self.builder];
+                            self.GRID_MAP.grid[last_clicked_grid_X][last_clicked_grid_Y] = grid_maker.makegrid(event.key)
                         elif event.key == Q_KEY:
-                        	T = 0;
-                        	rob = LEVEL.create_bot()
+                            T = 0;
+
+                            play_sound(START)
+                            rob = LEVEL.create_bot()
                         elif (event.key in BUILDER_CONTROLLER):
                             play_sound(CHANGE);
                             self.builder = self.builderSelector[event.key]
                         elif (event.key in MOVEMENT_CONTROLLER):
-                        	movement = MOVEMENT_CONTROLLER[event.key];
-                        	last_clicked_grid_X += movement[0];
-                        	last_clicked_grid_Y += movement[1];
-                        	self.GRID_MAP.change_selection(last_clicked_grid_Y,last_clicked_grid_X);
+                            movement = MOVEMENT_CONTROLLER[event.key];
+                            last_clicked_grid_X += movement[0];
+                            last_clicked_grid_Y += movement[1];
+                            self.GRID_MAP.change_selection(last_clicked_grid_Y,last_clicked_grid_X);
 
 
                 # render game screen
@@ -128,21 +142,25 @@ class Game():
                 self.GRID_MAP.drawmap(screen);
 
                 if(rob != None):
-                	rob.draw(screen)
-                	(X,Y) = rob.get_coords()
-                	x = X// (ARESTA + MARGIN)
-                	y = Y// (ARESTA + MARGIN)
-                	actual_grid = self.GRID_MAP.grid[x][y];
-                	rob.move()
-                	rob.change_speed(actual_grid)
+                    rob.draw(screen)
+                    (X,Y) = rob.get_coords()
+                    x = X// (ARESTA + MARGIN)
+                    y = Y// (ARESTA + MARGIN)
+                    actual_grid = self.GRID_MAP.grid[x][y];
+                    rob.move()
+                    rob.change_speed(actual_grid)
                 if(rob != None and rob.get_speed() == (0,0) ):
                         if(rob.validate()):
                             print('SUCCESS')
+                            play_sound(SUCCESS)
                             rob = LEVEL.create_bot()
                             if(rob == None):
+                                play_sound(END);
+                                pygame.time.delay(4000)
                                 break
                         else:
                             print('FAILURE')
+                            play_sound(ERROR)
                             rob = None;
                             LEVEL.reset();
 
