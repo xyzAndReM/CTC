@@ -1,58 +1,32 @@
-pygame-templates
-================
+# Turing Brewer
 
-A pygame basic templates repository
+Turing Brewer is a game based on Turing Machine principles, a project with the intent of reproducing the famous game Manufactoria.
 
-pygame-template.py
-------------------
+# Features
 
-The basic pygame template does nothing but opening a 800x600 window with
-a black background and handles the Close Window signal.
-    
-Useful to start a new pygame project.
-
-pygame-template-keyboard.py
----------------------------
-
-The pygame template with a basic keyboard cursor implementation.
-It does nothing, but you have examples of use in examples/.
-
-pygame-template-spritesheet.py
-------------------------------
-
-The pygame template with a basic class SpriteSheet to manipulate a
-sprite sheet as individual sprites. You have an example of use
-in examples/.
-
-pygame-template-mouse.py
-------------------------
-
-The pygame template with a basic mouse control implementation.
-It does nothing.
-
-examples
-========
+  - All pieces for simulating a turing machine are avaible
+  - Level desing is avaible
+  
 
 
-pointer.py
-----------
 
-An example of use of pygame-template-keyboard.py that controls a pointer
-with cursor keys (you can change them). It needs a pointer.png image in
-the directory to work.
+### Tech
 
-pointer2.py
------------
+Dillinger uses a number of open source projects to work properly:
 
-A more advanced version of pointe.py that check the bounds of the area
-in which the cursor can move using a rectangle. You can see the actual
-area toggling the space key.
+* [Python3] - HTML enhanced for web apps!
+* [PyGame] - awesome web-based text editor
 
-spritesheet\_viewer.py
-----------------------
 
-An example of use of the SpriteSheet class to extract individual sprites
-from a sprite sheet. Move through the sprites of the loaded sprite sheet
-(not included) using right and left cursor keys. The number shown is the
-index of the array of sprites.
+### How to run
 
+To run the game you need to install python3 and pygames first. After that is done all you have to do is run main.py .
+
+### Todos
+
+ - It still lacks a visual button to show what grid are you selecting
+ - No way to prevent eternal looping still.
+
+
+   [Python3]: <https://www.python.org/downloads/>
+   [PyGame]: <https://www.pygame.org/news>
